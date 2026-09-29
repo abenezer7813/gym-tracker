@@ -1,5 +1,5 @@
 import { Day, DAY_ORDER, DayPlan, UserProfile, WorkoutSession } from "./types";
-import { defaultWeeklyPlan } from "./seed";
+import { defaultWeeklyPlan, EXERCISE_IMAGES } from "./seed";
 
 const KEYS = {
   plan: "apex:plan",
@@ -43,7 +43,20 @@ export function savePlan(plan: Record<Day, DayPlan>) {
 
 export function ensurePlanSeeded(): Record<Day, DayPlan> {
   const existing = read<Record<Day, DayPlan> | null>(KEYS.plan, null as unknown as Record<Day, DayPlan>);
-  if (existing) return existing;
+  if (existing) {
+    let changed = false;
+    const migrated = Object.fromEntries(DAY_ORDER.map((day) => {
+      const dayPlan = existing[day];
+      const exercises = (dayPlan?.exercises ?? []).map((exercise) => {
+        if (exercise.imageUrl || !EXERCISE_IMAGES[exercise.name]) return exercise;
+        changed = true;
+        return { ...exercise, imageUrl: EXERCISE_IMAGES[exercise.name] };
+      });
+      return [day, { ...dayPlan, exercises }];
+    })) as Record<Day, DayPlan>;
+    if (changed) write(KEYS.plan, migrated);
+    return migrated;
+  }
   const seeded = defaultWeeklyPlan();
   write(KEYS.plan, seeded);
   return seeded;
