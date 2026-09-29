@@ -18,6 +18,7 @@ export interface PlanExercise {
   muscle: string;
   equipment: string;
   targetSets: number;
+  targetReps: number;
 }
 
 export interface DayPlan {
@@ -41,6 +42,7 @@ export interface SessionExercise {
   name: string;
   muscle: string;
   targetSets: number;
+  targetReps?: number;
   sets: SetEntry[];
   previous?: { weight: number; reps: number }[];
 }

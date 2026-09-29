@@ -183,7 +183,9 @@ export default function ActiveWorkoutPage() {
           </button>
           <div className="text-center">
             <div className="font-display text-lg font-bold">{exercise.name}</div>
-            <div className="text-xs text-text-dim">Target: {exercise.muscle}</div>
+            <div className="text-xs text-text-dim">
+              {exercise.muscle} &middot; {exercise.targetSets} x {exercise.targetReps ?? 10} reps
+            </div>
           </div>
           <button
             aria-label="Next exercise"
@@ -234,7 +236,7 @@ export default function ActiveWorkoutPage() {
                     onChange={(e) =>
                       updateSet(i, { weight: e.target.value === "" ? null : Number(e.target.value) })
                     }
-                    placeholder="0"
+                    placeholder={String(exercise.targetReps ?? 10)}
                     className="w-full rounded-lg border border-border bg-surface-3 px-2 py-1.5 text-[15px] font-semibold text-text"
                   />
                 </label>

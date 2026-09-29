@@ -59,6 +59,7 @@ export default function TodayWorkoutPage() {
         name: pe.name,
         muscle: pe.muscle,
         targetSets: pe.targetSets,
+        targetReps: pe.targetReps ?? 10,
         sets: Array.from({ length: pe.targetSets }, (_, i) => ({
           n: i + 1,
           weight: null,
@@ -197,7 +198,9 @@ export default function TodayWorkoutPage() {
                 <div className="text-xs text-text-dim">{e.muscle}</div>
               </div>
             </div>
-            <div className="text-xs font-semibold text-text-dim">{e.targetSets} sets</div>
+            <div className="text-xs font-semibold text-text-dim">
+              {e.targetSets} x {e.targetReps ?? 10} reps
+            </div>
           </div>
         ))}
       </div>

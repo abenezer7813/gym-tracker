@@ -35,6 +35,7 @@ function AddExerciseInner() {
       name,
       muscle: muscleGroup,
       targetSets,
+      targetReps: 10,
       sets: Array.from({ length: targetSets }, (_, i) => ({
         n: i + 1,
         weight: null,

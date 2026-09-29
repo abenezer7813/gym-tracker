@@ -1,9 +1,9 @@
 import { Day, DayPlan, PlanExercise } from "./types";
 
 let uid = 0;
-function ex(name: string, muscle: string, equipment: string, targetSets = 3): PlanExercise {
+function ex(name: string, muscle: string, equipment: string, targetSets = 3, targetReps = 10): PlanExercise {
   uid += 1;
-  return { id: `ex-${uid}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`, name, muscle, equipment, targetSets };
+  return { id: `ex-${uid}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`, name, muscle, equipment, targetSets, targetReps };
 }
 
 export function defaultWeeklyPlan(): Record<Day, DayPlan> {
