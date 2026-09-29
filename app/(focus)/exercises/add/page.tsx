@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getActiveSession, saveActiveSession } from "@/lib/storage";
 import { EXERCISE_LIBRARY, EQUIPMENT_FILTERS, MUSCLE_FILTERS } from "@/lib/seed";
+import ExerciseImage from "@/components/ExerciseImage";
 
 function AddExerciseInner() {
   const router = useRouter();
@@ -13,6 +14,7 @@ function AddExerciseInner() {
   const [showCustom, setShowCustom] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customMuscle, setCustomMuscle] = useState("");
+  const [customImageUrl, setCustomImageUrl] = useState("");
 
   const results = useMemo(() => {
     return EXERCISE_LIBRARY.filter((e) => {
@@ -23,7 +25,7 @@ function AddExerciseInner() {
     });
   }, [query, muscle, equipment]);
 
-  function addExercise(name: string, muscleGroup: string, targetSets = 3) {
+  function addExercise(name: string, muscleGroup: string, targetSets = 3, imageUrl?: string) {
     const session = getActiveSession();
     if (!session) {
       router.push("/workout");
@@ -36,6 +38,7 @@ function AddExerciseInner() {
       muscle: muscleGroup,
       targetSets,
       targetReps: 10,
+      imageUrl,
       sets: Array.from({ length: targetSets }, (_, i) => ({
         n: i + 1,
         weight: null,
@@ -114,13 +117,16 @@ function AddExerciseInner() {
           {results.map((ex) => (
             <button
               key={ex.id}
-              onClick={() => addExercise(ex.name, ex.muscle, ex.targetSets)}
-              className="card flex items-center justify-between p-4 text-left"
+              onClick={() => addExercise(ex.name, ex.muscle, ex.targetSets, ex.imageUrl)}
+              className="card flex items-center justify-between gap-3 p-4 text-left"
             >
-              <div>
-                <div className="text-sm font-bold">{ex.name}</div>
-                <div className="text-xs text-text-dim">
-                  {ex.muscle} &middot; {ex.equipment}
+              <div className="flex min-w-0 items-center gap-3">
+                <ExerciseImage url={ex.imageUrl} name={ex.name} className="h-11 w-11" sizes="44px" />
+                <div>
+                  <div className="text-sm font-bold">{ex.name}</div>
+                  <div className="text-xs text-text-dim">
+                    {ex.muscle} &middot; {ex.equipment}
+                  </div>
                 </div>
               </div>
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-soft text-accent">
@@ -155,8 +161,21 @@ function AddExerciseInner() {
                 placeholder="Target muscle"
                 className="input"
               />
+              <input
+                type="url"
+                value={customImageUrl}
+                onChange={(e) => setCustomImageUrl(e.target.value)}
+                placeholder="Image URL (optional)"
+                className="input"
+                aria-label="Custom exercise image URL"
+              />
               <button
-                onClick={() => customName.trim() && addExercise(customName.trim(), customMuscle.trim() || "General")}
+                onClick={() => customName.trim() && addExercise(
+                  customName.trim(),
+                  customMuscle.trim() || "General",
+                  3,
+                  customImageUrl.trim() || undefined
+                )}
                 className="btn-primary"
               >
                 Add to Workout

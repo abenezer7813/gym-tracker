@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ensurePlanSeeded, savePlan, todayDay } from "@/lib/storage";
 import { DAY_LABEL, DAY_ORDER, Day, DayPlan, PlanExercise } from "@/lib/types";
+import ExerciseImage from "@/components/ExerciseImage";
 
 export default function PlanPage() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function PlanPage() {
       equipment: "Bodyweight",
       targetSets: 3,
       targetReps: 10,
+      imageUrl: "",
     };
     updateDay(dayKey, (day) => ({
       ...day,
@@ -237,7 +239,8 @@ export default function PlanPage() {
 
                       {day.exercises.map((exercise) => (
                         <div key={exercise.id} className="flex flex-col gap-2.5 rounded-xl border border-border p-3">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-end gap-2">
+                            <ExerciseImage url={exercise.imageUrl} name={exercise.name} className="h-12 w-12" />
                             <label className="flex-1 text-xs text-text-dim">
                               Exercise
                               <input
@@ -262,6 +265,17 @@ export default function PlanPage() {
                               </svg>
                             </button>
                           </div>
+                          <label className="flex flex-col gap-1 text-xs text-text-dim">
+                            Image URL
+                            <input
+                              type="url"
+                              value={exercise.imageUrl ?? ""}
+                              onChange={(event) => updateExercise(d, exercise.id, { imageUrl: event.target.value })}
+                              placeholder="https://example.com/exercise.jpg"
+                              className="input"
+                              aria-label={`${exercise.name || "Exercise"} image URL`}
+                            />
+                          </label>
                           <div className="grid grid-cols-2 gap-2.5">
                             <label className="flex flex-col gap-1 text-xs text-text-dim">
                               Muscle
@@ -337,10 +351,11 @@ export default function PlanPage() {
                   <div className="flex flex-col gap-2">
                     {day.exercises.map((e) => (
                       <div key={e.id} className="flex items-center justify-between text-sm">
-                        <span>{e.name}</span>
-                        <span className="text-text-dim">
-                          {e.targetSets} x {e.targetReps ?? 10} reps
-                        </span>
+                        <div className="flex min-w-0 items-center gap-3">
+                          <ExerciseImage url={e.imageUrl} name={e.name} className="h-10 w-10 rounded-lg" sizes="40px" />
+                          <span className="truncate">{e.name}</span>
+                        </div>
+                        <span className="shrink-0 pl-2 text-text-dim">{e.targetSets} x {e.targetReps ?? 10} reps</span>
                       </div>
                     ))}
                   </div>

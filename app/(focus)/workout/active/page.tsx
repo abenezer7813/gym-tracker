@@ -9,6 +9,7 @@ import {
   saveActiveSession,
 } from "@/lib/storage";
 import { SetEntry, WorkoutSession } from "@/lib/types";
+import ExerciseImage from "@/components/ExerciseImage";
 
 const REST_PRESETS = [30, 60, 90, 120, 180];
 
@@ -181,7 +182,8 @@ export default function ActiveWorkoutPage() {
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M15 18l-6-6 6-6" /></svg>
           </button>
-          <div className="text-center">
+          <div className="flex min-w-0 flex-col items-center gap-1 text-center">
+            <ExerciseImage url={exercise.imageUrl} name={exercise.name} className="h-12 w-12" sizes="48px" />
             <div className="font-display text-lg font-bold">{exercise.name}</div>
             <div className="text-xs text-text-dim">
               {exercise.muscle} &middot; {exercise.targetSets} x {exercise.targetReps ?? 10} reps

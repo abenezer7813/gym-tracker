@@ -12,6 +12,7 @@ import {
   todayDay,
 } from "@/lib/storage";
 import { DAY_LABEL, DAY_ORDER, Day, DayPlan, SessionExercise, WorkoutSession } from "@/lib/types";
+import ExerciseImage from "@/components/ExerciseImage";
 
 export default function TodayWorkoutPage() {
   const router = useRouter();
@@ -60,6 +61,7 @@ export default function TodayWorkoutPage() {
         muscle: pe.muscle,
         targetSets: pe.targetSets,
         targetReps: pe.targetReps ?? 10,
+        imageUrl: pe.imageUrl,
         sets: Array.from({ length: pe.targetSets }, (_, i) => ({
           n: i + 1,
           weight: null,
@@ -190,11 +192,9 @@ export default function TodayWorkoutPage() {
         {day.exercises.map((e, i) => (
           <div key={e.id} className="card flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-3 text-xs font-bold text-text-dim">
-                {i + 1}
-              </div>
+              <ExerciseImage url={e.imageUrl} name={e.name} className="h-10 w-10 rounded-lg" sizes="40px" />
               <div>
-                <div className="text-sm font-bold">{e.name}</div>
+                <div className="text-sm font-bold"><span className="mr-1.5 text-text-faint">{i + 1}.</span>{e.name}</div>
                 <div className="text-xs text-text-dim">{e.muscle}</div>
               </div>
             </div>
