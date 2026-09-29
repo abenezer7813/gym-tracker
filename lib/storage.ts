@@ -149,7 +149,7 @@ export function getWorkoutDayForDate(
   dayStart.setHours(0, 0, 0, 0);
   const dayIndex = (date.getDay() + 6) % 7;
   const workouts = DAY_ORDER.filter((day) => !plan[day].isRest);
-  const completedBeforeDate = getHistory().filter((session) => {
+  const completedDaysBeforeDate = new Set(getHistory().filter((session) => {
     if (!session.completedAt) return false;
     const startedAt = new Date(session.date);
     return (
@@ -157,11 +157,11 @@ export function getWorkoutDayForDate(
       startedAt >= weekStart &&
       startedAt < dayStart
     );
-  }).length;
-  const nextWorkoutDay = workouts[completedBeforeDate];
+  }).map((session) => session.day));
 
-  if (!nextWorkoutDay || DAY_ORDER.indexOf(nextWorkoutDay) > dayIndex) return null;
-  return nextWorkoutDay;
+  return workouts
+    .filter((day) => DAY_ORDER.indexOf(day) <= dayIndex && !completedDaysBeforeDate.has(day))
+    .at(-1) ?? null;
 }
 
 export function computeStreak(): number {

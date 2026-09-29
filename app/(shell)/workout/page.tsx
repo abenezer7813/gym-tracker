@@ -40,14 +40,18 @@ export default function TodayWorkoutPage() {
   if (!plan) return null;
 
   const day = plan[selectedDay];
+  const canStartSelected =
+    !completedToday &&
+    !day.isRest &&
+    DAY_ORDER.indexOf(selectedDay) <= DAY_ORDER.indexOf(today);
 
   function startWorkout() {
     if (hasActive) {
       router.push("/workout/active");
       return;
     }
-    if (!plan || !workoutDay || selectedDay !== workoutDay) return;
-    const previousSession = getLastCompletedSessionForDay(workoutDay);
+    if (!plan || !canStartSelected) return;
+    const previousSession = getLastCompletedSessionForDay(selectedDay);
     const exercises: SessionExercise[] = day.exercises.map((pe) => {
       const prevExercise = previousSession?.exercises.find((e) => e.name === pe.name);
       return {
@@ -67,7 +71,7 @@ export default function TodayWorkoutPage() {
 
     const session: WorkoutSession = {
       id: `session-${Date.now()}`,
-      day: workoutDay,
+      day: selectedDay,
       title: day.title,
       date: new Date().toISOString(),
       startedAt: Date.now(),
@@ -112,7 +116,7 @@ export default function TodayWorkoutPage() {
       <div className="flex flex-col gap-5 px-5 pt-7">
         <div className="font-display text-xl font-bold">Workout Schedule</div>
         <p className="-mt-3 text-xs text-text-dim">
-          Select any day to preview its workout.
+          Choose today&apos;s workout or catch up on a missed day.
         </p>
         {dayPicker}
         <div className="flex flex-col items-center gap-4 pt-12 text-center">
@@ -144,7 +148,7 @@ export default function TodayWorkoutPage() {
     <div className="flex flex-col gap-5 px-5 pt-7">
       <div className="font-display text-xl font-bold">Workout Schedule</div>
       <p className="-mt-3 text-xs text-text-dim">
-        Select any day to preview its workout.
+        Choose today&apos;s workout or catch up on a missed day.
       </p>
       {dayPicker}
       <div className="text-xs font-bold tracking-wide text-accent">
@@ -156,9 +160,11 @@ export default function TodayWorkoutPage() {
           Moved from {workoutDay ? DAY_LABEL[workoutDay] : ""}
         </p>
       )}
-      {selectedDay !== workoutDay && (
+      {!canStartSelected && !day.isRest && (
         <p className="-mt-4 text-xs text-text-dim">
-          Preview only — selecting a day here won&apos;t change your schedule.
+          {completedToday
+            ? "You have already completed a workout today."
+            : "Future days are preview-only."}
         </p>
       )}
 
@@ -201,9 +207,9 @@ export default function TodayWorkoutPage() {
           <button onClick={startWorkout} className="btn-primary">
             Continue Workout
           </button>
-        ) : selectedDay === workoutDay ? (
+        ) : canStartSelected ? (
           <button onClick={startWorkout} className="btn-primary">
-            Start Workout
+            {selectedDay === today ? "Start Today's Workout" : `Start ${DAY_LABEL[selectedDay]}'s Workout`}
           </button>
         ) : (
           <div className="rounded-xl bg-surface-2 p-3 text-center text-xs text-text-dim">
