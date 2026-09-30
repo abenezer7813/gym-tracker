@@ -174,7 +174,7 @@ export function getWorkoutDayForDate(
 
   return workouts
     .filter((day) => DAY_ORDER.indexOf(day) <= dayIndex && !completedDaysBeforeDate.has(day))
-    .at(-1) ?? null;
+    .at(0) ?? null;
 }
 
 export function computeStreak(): number {
@@ -238,8 +238,19 @@ export function dayStatus(day: Day, today: Day): "done" | "current" | "upcoming"
   const weekStart = startOfWeek(now);
   const dayDate = new Date(weekStart);
   dayDate.setDate(weekStart.getDate() + DAY_ORDER.indexOf(day));
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + DAY_ORDER.length);
+  const completedForScheduledDay = getHistory().some((session) => {
+    if (!session.completedAt || session.day !== day) return false;
+    const startedAt = new Date(session.date);
+    return (
+      !Number.isNaN(startedAt.getTime()) &&
+      startedAt >= weekStart &&
+      startedAt < weekEnd
+    );
+  });
 
-  if (hasCompletedWorkoutOnDate(dayDate)) return "done";
+  if (hasCompletedWorkoutOnDate(dayDate) || completedForScheduledDay) return "done";
   if (!getWorkoutDayForDate(plan, dayDate)) return "rest";
   return day === today ? "current" : "upcoming";
 }
